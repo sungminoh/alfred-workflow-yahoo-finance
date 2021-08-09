@@ -1,8 +1,8 @@
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/11041693/24129920/0f8b3560-0e29-11e7-8e59-363e5202af00.png" align="center" width="500"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/11041693/128689119-770a10a8-99c9-4ded-8fae-05598b7a5fa5.png" align="center" width="500"></p>
 
 
 
-#### latest release. 2020.01.08
+#### latest release. 2021.08.09
 
 
 
@@ -15,8 +15,7 @@
 `s` + `검색어`
 
 - `검색어` 를 입력하지 않으면 즐겨찾기에 등록된 종목을 보여줍니다.
-- `enter` 를 누르면 [네이버 금융](http://finance.naver.com/) 의 검색결과를 보여줍니다.
-- 펀드나, 환율의 경우는 실시간 정보를 보여주지 않습니다.
+- `enter` 를 누르면 [Yahoo finance](https://finance.yahoo.com/) 의 검색결과를 보여줍니다.
 - `ctr` + `enter` 를 누르면 즐겨찾기에 등록합니다.
 - `opt` + `enter` 를 누르면 즐겨찾기에 등록되어 있을 경우, 즐겨찾기에서 삭제합니다.
 
@@ -33,7 +32,7 @@
 - 즐겨찾기를 모두 삭제합니다.
 
 
-### [다운로드](https://github.com/sungminoh/alfred-workflow-stockprice/releases/download/3.0.6/Naver.finance.alfredworkflow)
+### [다운로드](https://github.com/sungminoh/alfred-workflow-yahoo-finance/releases/download/v1.0.0/alfread-workflow-yahoo-finance.alfredworkflow)
 
 -------------
 
@@ -46,8 +45,7 @@ this is an Alfred workflow for checking the realtime stock price of the Korean m
 `s`+`query`
 
 - blank `query` shows favorites.
-- `enter` key redirects to the [Naver finance](http://finance.naver.com/) search result.
-- No detail information for funds or currencies.
+- `enter` key redirects to the [Yahoo finance](https://finance.yahoo.com/) search result.
 - `ctr` + `enter` adds to the favorites.
 - `opt` + `enter` removes from the favorites.
 
@@ -64,4 +62,5 @@ this is an Alfred workflow for checking the realtime stock price of the Korean m
 - removes all favorites
 
 
-### [download](https://github.com/sungminoh/alfred-workflow-stockprice/releases/download/3.0.6/Naver.finance.alfredworkflow)
+### [download](https://github.com/sungminoh/alfred-workflow-yahoo-finance/releases/download/v1.0.0/alfread-workflow-yahoo-finance.alfredworkflow)
+
