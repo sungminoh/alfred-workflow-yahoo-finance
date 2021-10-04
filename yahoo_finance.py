@@ -26,6 +26,7 @@
     tyn:
 """
 
+import traceback
 from collections import namedtuple
 import json
 from pprint import pprint
@@ -45,6 +46,81 @@ else:
 
 
 Item = namedtuple('Item', ['title', 'subtitle', 'url', 'icon', 'description'])
+
+class StockItem:
+    def __init__(
+        self,
+        symbol,
+        regularMarketPrice=0,
+        currency='',
+        previousClose=0,
+        exchange='',
+        quoteType='',
+        volume=0,
+        high=0,
+        low=0,
+        link='',
+        description='',
+        note='', *args, **kwargs):
+        self.symbol = symbol
+        self.price = regularMarketPrice
+        self.currency = currency
+        self.closing_price = previousClose
+        self.exchange = exchange
+        self.quote_type = quoteType
+        self.volume = volume
+        self.high = high
+        self.low = low
+        self.link = link
+        self.description = description
+        self.note = note
+
+    @property
+    def icon(self):
+        if self.price > self.closing_price:
+            return './icons/red-arrow-up.png'
+        elif self.price < self.closing_price:
+            return './icons/blue-arrow-down.png'
+        return ''
+
+    @property
+    def sign(self):
+        if self.price > self.closing_price:
+            return '+'
+        elif self.price < self.closing_price:
+            return '-'
+        return ''
+
+    @property
+    def percent(self):
+        if not self.closing_price:
+            return 0
+        return abs(100 * (self.price / self.closing_price - 1))
+
+    @property
+    def difference(self):
+        return self.price - self.closing_price
+
+    def get_title(self):
+        return u'{name:<50}\t{currency} {price:<10}\t( {sign} {percent} %, {difference})'.format(
+            name=self.symbol,
+            currency=self.currency,
+            price=format_num(self.price, 2),
+            sign=self.sign,
+            percent=format_num(self.percent, 2),
+            difference=format_num(self.difference, 2))
+
+    def get_subtitle(self):
+        if self.note:
+            return self.note
+        return u'{market} {type}{volumn}{high}{low}  PER: {PER}  PBR: {PBR}'.format(
+            market=self.exchange,
+            type=self.quote_type,
+            volumn='  volumn: {}'.format(format_num(self.volume)) if self.volume else '',
+            high='  high: {}'.format(format_num(self.high, 2)) if self.high else '',
+            low='  low: {}'.format(format_num(self.low, 2)) if self.low else '',
+            PER='',
+            PBR='')
 
 
 class Stock(Workflow):
@@ -72,8 +148,14 @@ class Stock(Workflow):
             icon=icon)
 
     def build_item(self, item):
-        url = self.PAGE_URL % item['symbol']
+        link = self.PAGE_URL % item['symbol']
         description = item.get('shortname', item.get('longname'))
+        stock_item = StockItem(link=link, description=description, **item)
+        return Item(stock_item.get_title(),
+                    stock_item.get_subtitle(),
+                    stock_item.link,
+                    stock_item.icon,
+                    stock_item.description)
         price = float(item['regularMarketPrice'])
         if item['currency'] == 'USD':
             currency = '$'
@@ -197,26 +279,31 @@ class Stock(Workflow):
                     } ...
         '''
         url = self.POLLING_URL % ticker
-        result = get_json(url)['chart']['result']
+        ret = {'url': url}
+        result = None
+        try:
+            result = get_json(url)['chart']['result']
+        except Exception as e:
+            return {'note': str(e)}  #traceback.format_exc()}
         if not result:
-            return
+            return ret
         result = result[0]
         quote = result['indicators']['quote'][0]
-        meta = result['meta']
+        ret.update(result['meta'])
         if 'high' in quote:
-            meta['high'] = max(filter_none(quote['high']))
+            ret['high'] = max(filter_none(quote['high']))
         if 'low' in quote:
-            meta['low'] = min(filter_none(quote['low']))
+            ret['low'] = min(filter_none(quote['low']))
         if 'volume' in quote:
             volumes = filter_none(quote['volume'])
-            if volumes: meta['volume'] = volumes[-1]
+            if volumes: ret['volume'] = volumes[-1]
         if 'open' in quote:
             opens = filter_none(quote['open'])
-            if opens: meta['open'] = opens[0]
+            if opens: ret['open'] = opens[0]
         if 'close' in quote:
             closes = filter_none(quote['close'])
-            if closes: meta['close'] = closes[-1]
-        return meta
+            if closes: ret['close'] = closes[-1]
+        return ret
 
     def search(self, *args):
         query = u'%s' % ' '.join(args)
